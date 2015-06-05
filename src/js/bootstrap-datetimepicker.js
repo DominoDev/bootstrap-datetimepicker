@@ -35,12 +35,12 @@
 /*global moment:false */
 (function (factory) {
     'use strict';
-    if (typeof define === 'function' && define.amd) {
+//    if (typeof define === 'function' && define.amd) {
         // AMD is used - Register as an anonymous module.
-        define(['jquery', 'moment'], factory);
-    } else if (typeof exports === 'object') {
-        factory(require('jquery'), require('moment'));
-    } else {
+//        define(['jquery', 'moment'], factory);
+//    } else if (typeof exports === 'object') {
+//        factory(require('jquery'), require('moment'));
+//    } else {
         // Neither AMD nor CommonJS used. Use global variables.
         if (typeof jQuery === 'undefined') {
             throw 'bootstrap-datetimepicker requires jQuery to be loaded first';
@@ -49,7 +49,7 @@
             throw 'bootstrap-datetimepicker requires Moment.js to be loaded first';
         }
         factory(jQuery, moment);
-    }
+//    }
 }(function ($, moment) {
     'use strict';
     if (!moment) {
@@ -275,6 +275,10 @@
 
             getToolbar = function () {
                 var row = [];
+                // SDP 2015/06/04 added support for Present date
+                if (options.showPresentButton) {
+                    row.push($('<td>').append($('<a>').attr('data-action', 'present').append($('<span>').addClass(options.icons.present).text(' Present'))));
+                }
                 if (options.showTodayButton) {
                     row.push($('<td>').append($('<a>').attr('data-action', 'today').append($('<span>').addClass(options.icons.today))));
                 }
@@ -955,7 +959,12 @@
                 today: function () {
                     setValue(moment());
                 },
-
+                
+                present:function () {
+                    setValue(false);   //SDP 
+                    input.val('Present');
+                    hide();
+                },
                 close: hide
             },
 
@@ -1712,6 +1721,23 @@
             }
             return picker;
         };
+        // SDP 2015/06/04 added support for Present date
+        picker.showPresentButton = function (showPresentButton) {
+            if (arguments.length === 0) {
+                return options.showPresentButton;
+            }
+
+            if (typeof showPresentButton !== 'boolean') {
+                throw new TypeError('showPresentButton() expects a boolean parameter');
+            }
+
+            options.showPresentButton = showPresentButton;
+            if (widget) {
+                hide();
+                show();
+            }
+            return picker;
+        };
 
         picker.showClear = function (showClear) {
             if (arguments.length === 0) {
@@ -1920,6 +1946,8 @@
             previous: 'glyphicon glyphicon-chevron-left',
             next: 'glyphicon glyphicon-chevron-right',
             today: 'glyphicon glyphicon-screenshot',
+            // SDP 2015/06/04 added support for Present date
+            present: 'glyphicon glyphicon-pushpin',
             clear: 'glyphicon glyphicon-trash',
             close: 'glyphicon glyphicon-remove'
         },
@@ -1930,6 +1958,8 @@
         viewMode: 'days',
         toolbarPlacement: 'default',
         showTodayButton: false,
+        // SDP 2015/06/04 added support for Present date
+        showPresentButton: false,
         showClear: false,
         showClose: false,
         widgetPositioning: {
